@@ -5,7 +5,7 @@ const TaskModal = ({ active, toggleModal, addNewTask }) => {
   const [taskName, setTaskName] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (taskName) => {
+  const handleChange = taskName => {
     setTaskName(taskName);
   };
 
@@ -19,12 +19,13 @@ const TaskModal = ({ active, toggleModal, addNewTask }) => {
       await addNewTask(taskName);
     } catch (error) {
       console.error(error);
+      // @minhdang TH lỗi em xử lý ntn
     } finally {
       setLoading(false);
       setTaskName("");
     }
   };
-
+  // @minhdang chỗ này k style gì thì k cần bọc div ngoài đâu
   return (
     <div>
       <Modal

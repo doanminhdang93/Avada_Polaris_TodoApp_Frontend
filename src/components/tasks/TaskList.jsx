@@ -14,9 +14,12 @@ const TaskList = () => {
   const server = process.env.REACT_APP_API_URL;
 
   const toggleModal = () => {
-    setActive((active) => !active);
+    setActive(active => !active);
   };
 
+  // @minhdang chuyển đoạn get data này thành hook nhé hook/useFetchApi
+  // Dự án thật của mình có nhiều chỗ cần call api mỗi lần viết ntn thì bị phức tạp quá
+  // Tham khảo code sample hoặc code a chỉ nhé. Em có thể tùy chỉnh sao cho có hook tối ưu, cover đc nhiều trường hợp sử dụng nhất có thể
   const getTasks = async () => {
     try {
       const { data } = await axios.get(`${server}/tasks`);
@@ -30,8 +33,8 @@ const TaskList = () => {
   useEffect(() => {
     getTasks();
   }, []);
-
-  const addNewTask = async (taskName) => {
+  // @minhdang tương tự useFetchApi e có thể viết 1 cái hook useCreateApi cấn chỗ nào thì hỏi a
+  const addNewTask = async taskName => {
     try {
       const { data } = await axios.post(`${server}/task`, {
         name: taskName,
@@ -43,15 +46,13 @@ const TaskList = () => {
       console.log(err);
     }
   };
-
-  const deleteTasks = async (ids) => {
+  // @minhdang tương tự useDeleteApi
+  const deleteTasks = async ids => {
     try {
       await axios.delete(`${server}/taskIds`, {
         data: { ids },
       });
-      setTaskList((curTask) =>
-        curTask.filter((task) => !ids.includes(task.id))
-      );
+      setTaskList(curTask => curTask.filter(task => !ids.includes(task.id)));
     } catch (err) {
       console.log(err);
     } finally {
@@ -59,13 +60,14 @@ const TaskList = () => {
     }
   };
 
-  const isCompletedTasks = async (ids) => {
+  // @minhdang tương tự useUpdateApi
+  const isCompletedTasks = async ids => {
     try {
       await axios.put(`${server}/taskIds`, {
         ids,
       });
-      setTaskList((curTask) =>
-        curTask.map((task) => {
+      setTaskList(curTask =>
+        curTask.map(task => {
           if (!ids.includes(task.id)) return task;
           return { ...task, isCompleted: !task.isCompleted };
         })
@@ -77,6 +79,7 @@ const TaskList = () => {
     }
   };
 
+  //link empty này có thể sử dụng lại nhiều nơi e cho vào /config nhé
   const emptyStateMarkup = (
     <EmptyState
       heading="No task found!"
@@ -85,6 +88,7 @@ const TaskList = () => {
     ></EmptyState>
   );
 
+  // @minhdang đoạn này tách ra thành component nhé
   const resourceListMarkup = (
     <Card>
       <ResourceList
@@ -95,7 +99,7 @@ const TaskList = () => {
         items={taskList}
         emptyState={emptyStateMarkup}
         loading={isLoading}
-        renderItem={(item) => (
+        renderItem={item => (
           <TaskItem
             task={item}
             onUpdateTasksState={isCompletedTasks}
