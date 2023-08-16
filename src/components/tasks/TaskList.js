@@ -1,70 +1,54 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { ResourceList, Page, Card } from "@shopify/polaris";
 import { useState } from "react";
 import TaskItem from "./TaskItem";
 import TaskModal from "./TaskModal";
-import EmptyStateMarkup from "../config/EmptyStateMarkup";
+import EmptyStateMarkup from "../config/emptyState/EmptyStateMarkup";
 import useFetchApi from "../hooks/useFetchApi";
-import tasksApi from "../API/tasksApi";
 import useCreateApi from "../hooks/useCreateApi";
+import useDeleteApi from "../hooks/useDeleteApi";
+import useUpdateStatus from "../hooks/useUpdateStatus";
 
 const TaskList = () => {
   const [selectedItems, setSelectedItems] = useState([]);
   const { isLoading, taskList, setTaskList } = useFetchApi();
-
   const [active, setActive] = useState(false);
-
   const toggleModal = () => {
     setActive((active) => !active);
   };
 
-  // @minhdang tương tự useFetchApi e có thể viết 1 cái hook useCreateApi cấn chỗ nào thì hỏi a
-  const addNewTask = async (taskName) => {
-    try {
-      const { data } = await tasksApi.create({
-        name: taskName,
-      });
-      const newTasks = [{ ...data.data }, ...taskList];
-      setTaskList(newTasks);
-      toggleModal();
-    } catch (err) {
-      console.log(err);
-    }
+  const { createTask } = useCreateApi();
+
+  const addNewTask = ({ name, id, createdAt }) => {
+    createTask(name, id, createdAt);
+    const newTask = {
+      name: name,
+      id: id,
+      createdAt: createdAt,
+    };
+    const newTaskList = [{ ...newTask }, ...taskList];
+    setTaskList(newTaskList);
+    toggleModal();
   };
 
-  // @minhdang tương tự useDeleteApi
-  const deleteTasks = async (ids) => {
-    try {
-      await tasksApi.delete({
-        data: { ids },
-      });
-      setTaskList((curTask) =>
-        curTask.filter((task) => !ids.includes(task.id))
-      );
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setSelectedItems([]);
-    }
+  const { deleteTasksHandler } = useDeleteApi();
+
+  const deleteTasks = (ids) => {
+    deleteTasksHandler(ids);
+    setTaskList((curTask) => curTask.filter((task) => !ids.includes(task.id)));
+    setSelectedItems([]);
   };
 
-  // @minhdang tương tự useUpdateApi
-  const isCompletedTasks = async (ids) => {
-    try {
-      await tasksApi.updateStatus({
-        ids,
-      });
-      setTaskList((curTask) =>
-        curTask.map((task) => {
-          if (!ids.includes(task.id)) return task;
-          return { ...task, isCompleted: !task.isCompleted };
-        })
-      );
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setSelectedItems([]);
-    }
+  const { updateStatusHandler } = useUpdateStatus();
+
+  const isCompletedTasks = (ids) => {
+    updateStatusHandler(ids);
+    setTaskList((curTask) =>
+      curTask.map((task) => {
+        if (!ids.includes(task.id)) return task;
+        return { ...task, isCompleted: !task.isCompleted };
+      })
+    );
+    setSelectedItems([]);
   };
 
   const emptyStateMarkup = <EmptyStateMarkup toggleModal={toggleModal} />;

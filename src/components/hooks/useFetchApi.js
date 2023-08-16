@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import tasksApi from "../API/tasksApi";
+import axiosClient from "../API/axiosClient";
 
 const useFetchApi = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,7 +10,7 @@ const useFetchApi = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const resp = await tasksApi.getAll();
+      const resp = await axiosClient.get("/tasks");
       setFetched(true);
       setTaskList(resp.data.data);
     } catch (error) {

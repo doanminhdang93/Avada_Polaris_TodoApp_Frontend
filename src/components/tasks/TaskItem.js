@@ -10,6 +10,7 @@ import { useState } from "react";
 const TaskItem = ({ task, onDelete, onUpdateTasksState }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { id, name, isCompleted } = task;
+
   const status = isCompleted ? "success" : "";
   const badgeTitle = isCompleted ? "Done" : "Pending";
 

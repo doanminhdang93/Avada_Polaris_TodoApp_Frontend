@@ -16,7 +16,11 @@ const TaskModal = ({ active, toggleModal, addNewTask }) => {
         throw new Error("You need to enter a valid task name!");
       }
       setLoading(true);
-      await addNewTask(taskName);
+      await addNewTask({
+        name: taskName,
+        id: Math.floor(Math.random() * Date.now()).toString(36),
+        createdAt: new Date(),
+      });
     } catch (error) {
       setMessage(error.message);
     } finally {
