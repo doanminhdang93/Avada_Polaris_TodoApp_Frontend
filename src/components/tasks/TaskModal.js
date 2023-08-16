@@ -1,9 +1,8 @@
 import { Modal, TextField } from "@shopify/polaris";
 import { useState } from "react";
 
-const TaskModal = ({ active, toggleModal, addNewTask }) => {
+const TaskModal = ({ active, toggleModal, addNewTask, creating }) => {
   const [taskName, setTaskName] = useState("");
-  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
   const handleChange = (taskName) => {
@@ -15,26 +14,27 @@ const TaskModal = ({ active, toggleModal, addNewTask }) => {
       if (!taskName.trim()) {
         throw new Error("You need to enter a valid task name!");
       }
-      setLoading(true);
-      await addNewTask({
+      const data = {
         name: taskName,
         id: Math.floor(Math.random() * Date.now()).toString(36),
         createdAt: new Date(),
-      });
+      };
+      await addNewTask(data);
+      setMessage("");
     } catch (error) {
       setMessage(error.message);
     } finally {
-      setLoading(false);
       setTaskName("");
     }
   };
   return (
     <Modal
-      loading={loading}
+      loading={creating}
       open={active}
       onClose={() => {
         setTaskName("");
         toggleModal();
+        setMessage("");
       }}
       title="Create a new task"
       primaryAction={{
@@ -55,6 +55,7 @@ const TaskModal = ({ active, toggleModal, addNewTask }) => {
           placeholder="Enter task name..."
           onChange={handleChange}
           error={message}
+          autoFocus
         />
       </Modal.Section>
     </Modal>

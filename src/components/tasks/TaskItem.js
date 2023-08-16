@@ -6,24 +6,17 @@ import {
   Stack,
   TextContainer,
 } from "@shopify/polaris";
-import { useState } from "react";
-const TaskItem = ({ task, onDelete, onUpdateTasksState }) => {
-  const [isLoading, setIsLoading] = useState(false);
+const TaskItem = ({ task, onDelete, onUpdateTasksState, isLoading }) => {
   const { id, name, isCompleted } = task;
-
   const status = isCompleted ? "success" : "";
   const badgeTitle = isCompleted ? "Done" : "Pending";
 
   const updateTasksStateHandler = async () => {
-    setIsLoading(true);
     await onUpdateTasksState([id]);
-    setIsLoading(false);
   };
 
   const deleteHandler = async () => {
-    setIsLoading(true);
     await onDelete([id]);
-    setIsLoading(false);
   };
   return (
     <ResourceItem

@@ -1,20 +1,22 @@
+import { useState } from "react";
 import axiosClient from "../API/axiosClient";
 
 const useCreateApi = () => {
-  const createTask = async (name, id, createdAt) => {
+  const [creating, setCreating] = useState(false);
+
+  const createTask = async (data) => {
     try {
-      await axiosClient.post("/task", {
-        name: name,
-        id: id,
-        createdAt: createdAt,
-      });
+      setCreating(true);
+      await axiosClient.post("/task", data);
     } catch (err) {
       alert("An error occurred while creating the new task!");
       console.log(err);
+    } finally {
+      setCreating(false);
     }
   };
 
-  return { createTask };
+  return { creating, createTask };
 };
 
 export default useCreateApi;

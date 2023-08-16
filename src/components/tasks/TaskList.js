@@ -10,20 +10,20 @@ import useUpdateStatus from "../hooks/useUpdateStatus";
 
 const TaskList = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const { isLoading, taskList, setTaskList } = useFetchApi();
+  const { isLoading, taskList, setTaskList, setIsLoading } = useFetchApi();
   const [active, setActive] = useState(false);
   const toggleModal = () => {
     setActive((active) => !active);
   };
 
-  const { createTask } = useCreateApi();
+  const { createTask, creating } = useCreateApi();
 
-  const addNewTask = ({ name, id, createdAt }) => {
-    createTask(name, id, createdAt);
+  const addNewTask = async (data) => {
+    await createTask(data);
     const newTask = {
-      name: name,
-      id: id,
-      createdAt: createdAt,
+      name: data.name,
+      id: data.id,
+      createdAt: data.createdAt,
     };
     const newTaskList = [{ ...newTask }, ...taskList];
     setTaskList(newTaskList);
@@ -32,16 +32,19 @@ const TaskList = () => {
 
   const { deleteTasksHandler } = useDeleteApi();
 
-  const deleteTasks = (ids) => {
-    deleteTasksHandler(ids);
+  const deleteTasks = async (ids) => {
+    setIsLoading(true);
+    await deleteTasksHandler(ids);
     setTaskList((curTask) => curTask.filter((task) => !ids.includes(task.id)));
     setSelectedItems([]);
+    setIsLoading(false);
   };
 
   const { updateStatusHandler } = useUpdateStatus();
 
-  const isCompletedTasks = (ids) => {
-    updateStatusHandler(ids);
+  const isCompletedTasks = async (ids) => {
+    setIsLoading(true);
+    await updateStatusHandler(ids);
     setTaskList((curTask) =>
       curTask.map((task) => {
         if (!ids.includes(task.id)) return task;
@@ -49,6 +52,7 @@ const TaskList = () => {
       })
     );
     setSelectedItems([]);
+    setIsLoading(false);
   };
 
   const emptyStateMarkup = <EmptyStateMarkup toggleModal={toggleModal} />;
@@ -68,6 +72,7 @@ const TaskList = () => {
             task={item}
             onUpdateTasksState={isCompletedTasks}
             onDelete={deleteTasks}
+            isLoading={isLoading}
           />
         )}
         promotedBulkActions={[
@@ -97,6 +102,7 @@ const TaskList = () => {
         addNewTask={addNewTask}
         active={active}
         toggleModal={toggleModal}
+        creating={creating}
       />
     </Page>
   );
