@@ -7,7 +7,6 @@ import {
   TextContainer,
 } from "@shopify/polaris";
 import { useState } from "react";
-// @minhdang chuyển hết file này thành .js https://i.imgur.com/MFjCOiD.png
 const TaskItem = ({ task, onDelete, onUpdateTasksState }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { id, name, isCompleted } = task;

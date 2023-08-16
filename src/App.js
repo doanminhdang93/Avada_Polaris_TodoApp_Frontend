@@ -2,11 +2,21 @@ import "@shopify/polaris/dist/styles.css";
 import { AppProvider } from "@shopify/polaris";
 import AppLayout from "./layout/AppLayout";
 import TaskList from "./components/tasks/TaskList";
+import { logo } from "./config/theme";
 
-//@minhdang trong AppProvider có prop theme . E tìm hiểu xem cách dùng ntn nhé
 const App = () => {
+  const theme = {
+    logo: {
+      width: 124,
+      topBarSource: logo,
+      contextualSaveBarSource: logo,
+      url: "",
+      accessibilityLabel: "Logo",
+    },
+  };
+
   return (
-    <AppProvider>
+    <AppProvider theme={theme}>
       <AppLayout>
         <TaskList></TaskList>
       </AppLayout>
