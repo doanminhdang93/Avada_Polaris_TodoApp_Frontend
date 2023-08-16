@@ -1,15 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { ResourceList, Page, Card } from "@shopify/polaris";
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useState } from "react";
 import TaskItem from "./TaskItem";
 import TaskModal from "./TaskModal";
 import EmptyStateMarkup from "../config/EmptyStateMarkup";
 import useFetchApi from "../hooks/useFetchApi";
 import tasksApi from "../API/tasksApi";
 import useCreateApi from "../hooks/useCreateApi";
-// import useCreateApi from "../hooks/useCreateApi";
-// import fetchApi from "../../helpers/api/fetchApi";
 
 const TaskList = () => {
   const [selectedItems, setSelectedItems] = useState([]);
