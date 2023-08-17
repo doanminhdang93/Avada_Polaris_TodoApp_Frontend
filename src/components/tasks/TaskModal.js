@@ -18,6 +18,7 @@ const TaskModal = ({ active, toggleModal, addNewTask, creating }) => {
         name: taskName,
         id: Math.floor(Math.random() * Date.now()).toString(36),
         createdAt: new Date(),
+        isCompleted: false,
       };
       await addNewTask(data);
       setMessage("");
@@ -29,7 +30,7 @@ const TaskModal = ({ active, toggleModal, addNewTask, creating }) => {
   };
   return (
     <Modal
-      loading={creating}
+      // loading={creating}
       open={active}
       onClose={() => {
         setTaskName("");
@@ -41,6 +42,7 @@ const TaskModal = ({ active, toggleModal, addNewTask, creating }) => {
         content: "Create",
         onAction: handleSubmit,
         disabled: !taskName,
+        loading: creating,
       }}
       secondaryActions={[
         {

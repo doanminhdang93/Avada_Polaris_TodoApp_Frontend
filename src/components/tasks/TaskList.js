@@ -3,14 +3,15 @@ import { useState } from "react";
 import TaskItem from "./TaskItem";
 import TaskModal from "./TaskModal";
 import EmptyStateMarkup from "../config/emptyState/EmptyStateMarkup";
-import useFetchApi from "../hooks/useFetchApi";
-import useCreateApi from "../hooks/useCreateApi";
-import useDeleteApi from "../hooks/useDeleteApi";
-import useUpdateStatus from "../hooks/useUpdateStatus";
+import useFetchApi from "../../hooks/useFetchApi";
+import useCreateApi from "../../hooks/useCreateApi";
+import useDeleteApi from "../../hooks/useDeleteApi";
+import useUpdateStatus from "../../hooks/useUpdateStatus";
 
 const TaskList = () => {
   const [selectedItems, setSelectedItems] = useState([]);
-  const { isLoading, taskList, setTaskList, setIsLoading } = useFetchApi();
+  const { isLoading, taskList, setTaskList, setIsLoading, fetched } =
+    useFetchApi();
   const [active, setActive] = useState(false);
   const toggleModal = () => {
     setActive((active) => !active);
@@ -19,15 +20,18 @@ const TaskList = () => {
   const { createTask, creating } = useCreateApi();
 
   const addNewTask = async (data) => {
+    setIsLoading(true);
     await createTask(data);
     const newTask = {
       name: data.name,
       id: data.id,
       createdAt: data.createdAt,
+      isCompleted: data.isCompleted,
     };
     const newTaskList = [{ ...newTask }, ...taskList];
     setTaskList(newTaskList);
     toggleModal();
+    setIsLoading(false);
   };
 
   const { deleteTasksHandler } = useDeleteApi();
@@ -65,19 +69,18 @@ const TaskList = () => {
         onSelectionChange={setSelectedItems}
         selectable
         items={taskList}
-        emptyState={emptyStateMarkup}
+        emptyState={fetched && emptyStateMarkup}
         loading={isLoading}
         renderItem={(item) => (
           <TaskItem
             task={item}
             onUpdateTasksState={isCompletedTasks}
             onDelete={deleteTasks}
-            isLoading={isLoading}
           />
         )}
         promotedBulkActions={[
           {
-            content: "Complete",
+            content: "Toggle complete",
             onAction: () => isCompletedTasks(selectedItems),
           },
           {
